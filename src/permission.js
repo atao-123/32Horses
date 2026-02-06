@@ -12,15 +12,19 @@ router.beforeEach((to, from, next) => {
     console.log(token);
 
     //未登录，跳转到登录页
-    if (token == "" && to.path != "/login") {
+    if (!token && to.path != "/login") {
         console.log("未登录");
         return next({ path: "/login" })
     }
 
     //已登录，不可跳转到登录页
-    if (token != "" && to.path == "/login") {
+    if (token && to.path == "/login") {
         console.log("不可重复登陆");
         return next({ path: from.path ? from.path : '/' })
     }
+
+    //设置页面标题
+    let title = to.meta.title
+    document.title = title
     next()
 })

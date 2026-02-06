@@ -4,7 +4,6 @@ import { reactive } from "vue";
 export const useWebStore = defineStore('web', () => {
     const user = reactive({
         logged: false,
-        token: ''
     })
 
     return {

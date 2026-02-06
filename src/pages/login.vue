@@ -1,92 +1,3 @@
-<script setup>
-//导入响应式属性方法
-import {
-    ref,
-    reactive
-} from 'vue'
-
-//导入路由控制
-import { useRouter } from 'vue-router'
-const router = useRouter()
-
-//导入图标
-import {
-    User,
-    Lock
-} from '@element-plus/icons-vue'
-
-//导入错误弹窗方法
-import { ElNotification } from "element-plus";
-
-//导入用户状态仓库
-import { useWebStore } from '../stores/web';
-const webStore = useWebStore()
-
-//导入cookie操作方法
-import { useCookies } from '@vueuse/integrations/useCookies.js';
-const cookie = useCookies()
-
-
-//声明表单内属性
-const form = reactive({
-    username: "",
-    password: ""
-})
-
-//表单验证规则
-const rules = {
-    username: [
-        {
-            required: true,
-            message: '用户名不能为空',
-            trigger: 'blur'
-        }
-    ],
-    password: [
-        {
-            required: true,
-            message: '密码不能为空',
-            trigger: 'blur'
-        }
-    ]
-}
-
-//获取表单元素
-const formRef = ref(null)
-
-let tokenKey = "userToken"
-
-//前端登录功能展示
-const onSubmit = () => {
-    formRef.value.validate((valid) => {
-        //规则验证不通过
-        if (!valid) {
-            return false
-        }
-        console.log("验证通过");
-        //用户密码正确
-        if (form.username == "admin") {
-            if (form.password == "admin") {
-                //存储token
-                cookie.set(tokenKey, "pass")
-                ElNotification({
-                    message: "登陆成功",
-                    type: "success",
-                    duration: 3000
-                })
-                router.push("/")
-                return true
-            }
-        }
-        ElNotification({
-            message: "用户名或密码错误",
-            type: "error",
-            duration: 3000
-        })
-    })
-}
-</script>
-
 <template>
     <el-row class="login-container">
         <el-col :lg="16" :md="12" class="left">
@@ -130,6 +41,94 @@ const onSubmit = () => {
         </el-col>
     </el-row>
 </template>
+
+<script setup>
+// 导入响应式属性方法
+import { ref, reactive, onMounted, onBeforeUnmount } from 'vue'
+
+// 导入路由控制
+import { useRouter } from 'vue-router'
+const router = useRouter()
+
+// 导入图标
+import { User, Lock } from '@element-plus/icons-vue'
+
+// 导入cookie本地库
+import { setToken } from '../composables/auth';
+
+// 导入消息弹出本地库
+import { toast } from '../composables/util';
+
+// 导入状态控制库
+import { useWebStore } from '../stores';
+const webStore = useWebStore()
+
+// 声明表单内属性
+const form = reactive({
+    username: "",
+    password: ""
+})
+
+// 表单验证规则
+const rules = {
+    username: [
+        {
+            required: true,
+            message: '用户名不能为空',
+            trigger: 'blur'
+        }
+    ],
+    password: [
+        {
+            required: true,
+            message: '密码不能为空',
+            trigger: 'blur'
+        }
+    ]
+}
+
+// 获取表单元素
+const formRef = ref(null)
+
+// 前端登录功能展示ps:懒做按钮等待
+const onSubmit = () => {
+    formRef.value.validate((valid) => {
+        // 规则验证不通过
+        if (!valid) {
+            return false
+        }
+        console.log("验证通过");
+        // 用户密码正确
+        if (form.username == "admin") {
+            if (form.password == "admin") {
+                //存储token
+                setToken("pass")
+                webStore.user.logged = true
+                toast("登录成功")
+                router.push("/")
+                return true
+            }
+        }
+        toast("用户名或密码错误", "error")
+    })
+}
+
+// 监听回车事件
+function onKeyUp(e) {
+    if (e.key == "Enter") {
+        onSubmit()
+    }
+}
+// 添加键盘监听
+onMounted(() => {
+    document.addEventListener("keyup", onKeyUp)
+})
+// 移除键盘监听
+onBeforeUnmount(() => {
+    document.addEventListener("keyup", onKeyUp)
+})
+
+</script>
 
 <style>
 .login-container {

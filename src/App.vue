@@ -1,5 +1,4 @@
 <script setup>
-import { useWebStore } from './stores/web';
 
 </script>
 
