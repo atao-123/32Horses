@@ -22,11 +22,11 @@
 <script setup>
 import defaultAvatar from '~/assets/default.png'
 import { ref } from 'vue';
-import { showModal } from '../composables/util';
-import { removeToken } from '../composables/auth';
+import { showModal } from '~/composables/util';
+import { removeToken } from '~/composables/auth';
 import { useRouter } from 'vue-router'
-import { toast } from '../composables/util';
-import { useWebStore } from '../stores';
+import { toast } from '~/composables/util';
+import { useWebStore } from '~/stores';
 
 const webStore = useWebStore()
 const router = useRouter()
@@ -41,14 +41,14 @@ function handlelogout() {
 </script>
 
 <style>
-.header {
-    @apply flex items-center text-light-50 fixed top-0 left-0 right-0;
-    height: 40px;
+.header{
+    @apply flex text-light-50 right-0;
+    height: 60px;
 }
 
 .dropdown {
     height: 64px;
     cursor: pointer;
-    @apply flex justify-center items-center mx-5
+    @apply flex justify-center items-center mx-5;
 }
 </style>
